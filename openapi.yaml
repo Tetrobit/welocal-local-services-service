@@ -1,0 +1,508 @@
+openapi: 3.0.0
+info:
+  title: WeLocal Local Services Service API
+  description: API для управления локальными услугами
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:10413
+    description: Локальный сервер разработки
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        providerId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+          format: float
+        priceType:
+          type: string
+          enum: [FIXED, HOURLY, DAILY]
+        availability:
+          type: object
+          properties:
+            monday:
+              type: array
+              items:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    format: time
+                  end:
+                    type: string
+                    format: time
+            tuesday:
+              type: array
+              items:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    format: time
+                  end:
+                    type: string
+                    format: time
+            wednesday:
+              type: array
+              items:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    format: time
+                  end:
+                    type: string
+                    format: time
+            thursday:
+              type: array
+              items:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    format: time
+                  end:
+                    type: string
+                    format: time
+            friday:
+              type: array
+              items:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    format: time
+                  end:
+                    type: string
+                    format: time
+            saturday:
+              type: array
+              items:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    format: time
+                  end:
+                    type: string
+                    format: time
+            sunday:
+              type: array
+              items:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    format: time
+                  end:
+                    type: string
+                    format: time
+        location:
+          type: object
+          properties:
+            address:
+              type: string
+            latitude:
+              type: number
+              format: float
+            longitude:
+              type: number
+              format: float
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, PENDING]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+paths:
+  /services:
+    get:
+      summary: Получение списка услуг
+      tags:
+        - Услуги
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE, PENDING]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Успешное получение списка услуг
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          description: Не авторизован
+        '500':
+          description: Внутренняя ошибка сервера
+
+    post:
+      summary: Создание новой услуги
+      tags:
+        - Услуги
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - category
+                - price
+                - priceType
+                - location
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                priceType:
+                  type: string
+                  enum: [FIXED, HOURLY, DAILY]
+                availability:
+                  type: object
+                  properties:
+                    monday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    tuesday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    wednesday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    thursday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    friday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    saturday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    sunday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                location:
+                  type: object
+                  required:
+                    - address
+                    - latitude
+                    - longitude
+                  properties:
+                    address:
+                      type: string
+                    latitude:
+                      type: number
+                      format: float
+                    longitude:
+                      type: number
+                      format: float
+      responses:
+        '201':
+          description: Услуга успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '400':
+          description: Неверные данные
+        '401':
+          description: Не авторизован
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /services/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Получение информации об услуге
+      tags:
+        - Услуги
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешное получение информации об услуге
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '404':
+          description: Услуга не найдена
+        '500':
+          description: Внутренняя ошибка сервера
+
+    put:
+      summary: Обновление информации об услуге
+      tags:
+        - Услуги
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                priceType:
+                  type: string
+                  enum: [FIXED, HOURLY, DAILY]
+                availability:
+                  type: object
+                  properties:
+                    monday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    tuesday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    wednesday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    thursday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    friday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    saturday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                    sunday:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: time
+                          end:
+                            type: string
+                            format: time
+                location:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    latitude:
+                      type: number
+                      format: float
+                    longitude:
+                      type: number
+                      format: float
+                status:
+                  type: string
+                  enum: [ACTIVE, INACTIVE, PENDING]
+      responses:
+        '200':
+          description: Услуга успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '400':
+          description: Неверные данные
+        '401':
+          description: Не авторизован
+        '404':
+          description: Услуга не найдена
+        '500':
+          description: Внутренняя ошибка сервера
+
+    delete:
+      summary: Удаление услуги
+      tags:
+        - Услуги
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Услуга успешно удалена
+        '401':
+          description: Не авторизован
+        '404':
+          description: Услуга не найдена
+        '500':
+          description: Внутренняя ошибка сервера 
